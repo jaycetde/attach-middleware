@@ -1,4 +1,4 @@
-var slice = Array.prototype.slice;
+var fastApply = require('fast-apply');
 
 module.exports = attachMiddleware;
 
@@ -20,7 +20,7 @@ function run() {
     this._middlewareStack = this._middlewareStack || [];
     
     var self = this
-      , args = slice.call(arguments)
+      , args = fastApply(Array, null, arguments)
       , callback = typeof args[args.length - 1] === 'function' ? args.pop() : null
       , applyArgs = args.concat([next])
       , l = self._middlewareStack.length
@@ -43,7 +43,7 @@ function run() {
             
         // replace applyArgs with arguments
         if (arguments.length > 1) {
-            var args = slice.call(arguments);
+            var args = fastApply(Array, null, arguments);
             args.shift(); // remove err argument
             stackApplyArgs = args.concat(stackApplyArgs.slice(args.length)); // add left out applyArgs
         }
@@ -55,13 +55,11 @@ function run() {
             return next(err);
         }
         
-        process.nextTick(function () {
-            nextStackFn.apply(self, stackApplyArgs);
-        });
+        fastApply(nextStackFn, self, stackApplyArgs);
 
     }
 
-    process.nextTick(next);
+    next();
     
     return this;
     
@@ -70,7 +68,7 @@ function run() {
 function use(fn) {
     
     if (arguments.length > 1)
-        fn = slice.call(arguments);
+        fn = fastApply(Array, null, arguments);
     
     if (Object.prototype.toString.call(fn) === '[object Array]') {
         var self = this;
