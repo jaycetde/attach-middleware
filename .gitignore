@@ -1,0 +1,6 @@
+# Swap files
+*.swp
+*~
+*.out
+
+node_modules/
