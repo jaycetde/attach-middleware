@@ -80,17 +80,20 @@ obj.run('foo', 'bar');
 
 returns `this`
 
-### .run(args*)
+### .run(args*, [callback])
 
 Send arguments through the middleware stack
+
+If the last argument is a function, it is treated as a callback.  This function should accept an err
+and all arguments passed to `.run` (except the callback function)
 
 returns `this`
 
 ### next
 
-The `next` or `callback` function passed to each middleware must be called to run the next middleware.
-When calling `next`, the first argument should be an error or null.  Any additional arguments will overwrite
-the arguments for the rest of the middleware:
+The `next` or `callback` function passed to each middleware must be called to run the next middleware and
+eventually, the callback.  When calling `next`, the first argument should be an error or null.  Any
+additional arguments will overwrite the arguments for the rest of the middleware:
 
 ```javascript
 

@@ -235,4 +235,47 @@ describe('attach-middleware', function () {
         
     });
     
+    it('should call `run`s `callback` after stack has ran', function (done) {
+        
+        var obj = {}
+          , middlewareCount = 0
+        ;
+        
+        attachMiddleware(obj);
+        
+        obj.use(function (arg1, arg2, next) {
+            
+            middlewareCount += 1;
+            
+            middlewareCount.should.equal(1);
+            
+            next();
+            
+        });
+        
+        obj.use(function (arg1, arg2, next) {
+            
+            middlewareCount += 1;
+            
+            middlewareCount.should.equal(2);
+            
+            next('error')
+            
+        });
+        
+        obj.run('foo', 'bar', function (err, arg1, arg2) {
+            
+            arguments.length.should.equal(3);
+            
+            err.should.equal('error');
+            
+            arg1.should.equal('foo');
+            arg2.should.equal('bar');
+            
+            done();
+            
+        });
+        
+    });
+    
 });

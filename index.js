@@ -19,6 +19,7 @@ function run() {
     
     var self = this
       , args = slice.call(arguments)
+      , callback = typeof args[args.length - 1] === 'function' ? args.pop() : null
       , applyArgs = args.concat([next])
       , l = self._middlewareStack.length
       , i = -1
@@ -28,35 +29,39 @@ function run() {
         
         i += 1;
         
-        var stackApplyArgs = applyArgs
-          , isErrHandler = self._middlewareStack[i].length > applyArgs.length
+        var stackApplyArgs = applyArgs // do I need to .slice() this?
+          , nextStackFn = self._middlewareStack[i]
+          , isErrHandler = nextStackFn ? nextStackFn.length > stackApplyArgs.length : true
         ;
 
-        if (i < l) {
-            
-            // replace applyArgs with arguments
-            if (arguments.length > 1) {
-                var args = slice.call(arguments);
-                args.shift(); // remove err argument
-                stackApplyArgs = args.concat(applyArgs.slice(args.length)); // add left out applyArgs
-            }
-            
-            if (isErrHandler) {
-                stackApplyArgs = [ err ].concat(stackApplyArgs);
-            } else if (err) {
-                // don't run this middleware
-                return next(err);
-            }
-            
-            process.nextTick(function () {
-                self._middlewareStack[i].apply(self, stackApplyArgs);
-            });
-
+        if (!nextStackFn) {
+            nextStackFn = callback;
+            stackApplyArgs.pop(); // remove `next`. Affects `applyArgs`, but should be last run
         }
+            
+        // replace applyArgs with arguments
+        if (arguments.length > 1) {
+            var args = slice.call(arguments);
+            args.shift(); // remove err argument
+            stackApplyArgs = args.concat(stackApplyArgs.slice(args.length)); // add left out applyArgs
+        }
+        
+        if (isErrHandler) {
+            stackApplyArgs = [ err ].concat(stackApplyArgs);
+        } else if (err) {
+            // don't run this middleware
+            return next(err);
+        }
+        
+        process.nextTick(function () {
+            nextStackFn.apply(self, stackApplyArgs);
+        });
 
     }
 
     process.nextTick(next);
+    
+    return this;
     
 }
 
@@ -78,5 +83,7 @@ function use(fn) {
     }
     
     this._middlewareStack.push(fn);
+    
+    return this;
     
 }
