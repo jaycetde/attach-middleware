@@ -278,4 +278,27 @@ describe('attach-middleware', function () {
         
     });
     
+    it('should call `run`s `callback` on an empty stack', function (done) {
+        
+        var obj = {}
+          , middlewareCount = 0
+        ;
+        
+        attachMiddleware(obj);
+        
+        obj.run('foo', 'bar', function (err, arg1, arg2) {
+            
+            arguments.length.should.equal(3);
+            
+            should(err).not.exist;
+            
+            arg1.should.equal('foo');
+            arg2.should.equal('bar');
+            
+            done();
+            
+        });
+        
+    });
+    
 });

@@ -17,6 +17,8 @@ function attachMiddleware(obj, options) {
 
 function run() {
     
+    this._middlewareStack = this._middlewareStack || [];
+    
     var self = this
       , args = slice.call(arguments)
       , callback = typeof args[args.length - 1] === 'function' ? args.pop() : null
@@ -78,9 +80,7 @@ function use(fn) {
         return this;
     }
     
-    if (!this._middlewareStack) {
-        this._middlewareStack = [];
-    }
+    this._middlewareStack = this._middlewareStack || [];
     
     this._middlewareStack.push(fn);
     
