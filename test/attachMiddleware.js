@@ -83,6 +83,27 @@ describe('attach-middleware', function () {
         
     });
     
+    it('should work as an constructors prototype', function (done) {
+        
+        attachMiddleware(Instance.prototype);
+        
+        var obj = new Instance();
+        
+        obj.use.should.exist;
+        obj.run.should.exist;
+        
+        obj.use(function (arg, next) {
+            
+            arg.should.equal('foo');
+            
+            done();
+            
+        });
+        
+        obj.run('foo');
+        
+    });
+    
     it('should handle errors', function (done) {
         
         var obj = {}
