@@ -67,7 +67,7 @@ describe('attach-middleware', function () {
             
         });
         
-        obj.use(function (o) {
+        obj.use(function (o, next) {
             
             middlewareCount += 1;
             
@@ -76,6 +76,8 @@ describe('attach-middleware', function () {
             o.should.eql({ hello: 'world', firstMiddleware: true, secondMiddleware: true });
             
             done();
+            
+            next();
             
         });
         
@@ -298,6 +300,34 @@ describe('attach-middleware', function () {
             done();
             
         });
+        
+    });
+    
+    it('should be able to attach multiple sets of functions per object', function (done) {
+        
+        var obj = {};
+        
+        attachMiddleware(obj, { runName: 'runMiddleware', useName: 'useMiddleware' }); // custom method names
+        attachMiddleware(obj); // default method names
+        
+        obj.runMiddleware.should.exist;
+        obj.useMiddleware.should.exist;
+        obj.run.should.exist;
+        obj.use.should.exist;
+        
+        obj.useMiddleware(function () {
+            throw new Error('this middleware should not run');
+        });
+        
+        obj._runMiddlewareStack.should.exist;
+        
+        obj.use(function () {
+            done();
+        });
+        
+        obj._runStack.should.exist;
+        
+        obj.run();
         
     });
     
