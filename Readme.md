@@ -2,14 +2,6 @@
 
 Attach middleware functionality onto an object
 
-## Installation
-
-```bash
-npm install attach-middleware
-```
-
-## Example
-
 ```javascript
 
 var attachMiddleware = require('attach-middleware')
@@ -35,6 +27,14 @@ x.runMiddleware({ hello: 'world' });
 // { hello: 'world', firstMiddleware: true }
 
 ```
+
+## Installation
+
+    $ npm install attach-middleware
+
+## Dependencies
+
+  - [fast-apply](https://npmjs.org/package/fast-apply)
 
 ## API
 
