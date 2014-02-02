@@ -8,7 +8,7 @@ function attachMiddleware(obj, options) {
     
     var runName = options.runName || 'run'
       , useName = options.useName || 'use'
-      , stackName = '_' + runName + 'Stack'
+      , stackName = options.stackName || '_' + runName + 'Stack'
     ;
     
     obj[runName] = function () {
