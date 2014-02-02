@@ -1,6 +1,6 @@
 {
   "name": "attach-middleware",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Attach middleware functionality onto an object",
   "main": "index.js",
   "scripts": {
